@@ -27,7 +27,7 @@ public class DBUtil {
 		
 		ArrayList<BusinessRating> businessRatings = new ArrayList<BusinessRating>();
 		
-		String query = "SELECT businessId, rating from UserBusinessMapping where userId=" + userId + ";";
+		String query = "SELECT businessId, rating from UserBusinessMapping where userId='" + userId + "';";
 		statement = connection.createStatement();
 		result = statement.executeQuery(query);
 		while(result.next()) {
@@ -69,7 +69,7 @@ public class DBUtil {
 	}
 
 	public int getRating(String userId, String businessId) throws SQLException {
-		String query = "SELECT rating from UserBusinessMapping where userId=" + userId + " and businessId=" + businessId + ";";
+		String query = "SELECT rating from UserBusinessMapping where userId='" + userId + "' and businessId='" + businessId + "';";
 		statement = connection.createStatement();
 		result = statement.executeQuery(query);
 		int rating = 0;
@@ -81,7 +81,7 @@ public class DBUtil {
 	}
 
 	public int getTotalBusinessRating(String businessId) throws SQLException {
-		String query = "SELECT SUM(rating) as totalRating from UserBusinessMapping where businessId=" + businessId + ";";
+		String query = "SELECT SUM(rating) as totalRating from UserBusinessMapping where businessId='" + businessId + "';";
 		statement = connection.createStatement();
 		result = statement.executeQuery(query);
 		int totalRating = 0;
@@ -93,7 +93,7 @@ public class DBUtil {
 	}
 
 	public double getAvgUserRating(String userId) throws SQLException {
-		String query = "SELECT AVG(rating) as avgRating from UserBusinessMapping where userId=" + userId + ";";
+		String query = "SELECT AVG(rating) as avgRating from UserBusinessMapping where userId='" + userId + "';";
 		statement = connection.createStatement();
 		result = statement.executeQuery(query);
 		double avgRating = 0.0;
@@ -105,7 +105,7 @@ public class DBUtil {
 	}
 
 	public HashSet<String> getBusinessesRatedByUser(String userId) throws SQLException {
-		String query = "SELECT businessId from UserBusinessMapping where userId=" + userId + ";";
+		String query = "SELECT businessId from UserBusinessMapping where userId='" + userId + "';";
 		statement = connection.createStatement();
 		result = statement.executeQuery(query);
 		HashSet<String> businessesRatedByUser = new HashSet<String>();
@@ -119,7 +119,7 @@ public class DBUtil {
 		
 		ArrayList<UserRating> userRatings = new ArrayList<UserRating>();
 		
-		String query = "SELECT userId, rating from UserBusinessMapping where businessId=" + businessId + ";";
+		String query = "SELECT userId, rating from UserBusinessMapping where businessId='" + businessId + "';";
 		statement = connection.createStatement();
 		result = statement.executeQuery(query);
 		while(result.next()) {
