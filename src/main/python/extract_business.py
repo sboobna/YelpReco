@@ -19,12 +19,14 @@ CURRENT_STATE = 'AZ'
 
 business_id_set = set()
 user_id_set = set()
+user_review_rating_sum_dict = {}
+user_review_count_dict = {}
 
 
 def business_extractor():
 	dataset = open('/home/bigdata/Project/yelp_academic_dataset_business.json', 'r')
 	writer = csv.writer(open('/home/bigdata/Project/yelp_businesses.csv', 'w'))
-	writer.writerow(['BID', 'BName', 'City', 'State', 'Stars', 'Review_Count', 'Latitude', 'Longitude'])
+	writer.writerow(['BID', 'BName', 'City', 'State', 'Average_Stars', 'Review_Count', 'Latitude', 'Longitude'])
 
 
 	for line in dataset:
@@ -34,7 +36,7 @@ def business_extractor():
 		if bstate != CURRENT_STATE:
 			continue
 
-		btype = line_dict[TYPE_STRING].encode('utf-8')
+		# btype = line_dict[TYPE_STRING].encode('utf-8')
 		bid = line_dict[BUSINESS_ID].encode('utf-8')
 		business_id_set.add(bid)
 
@@ -52,21 +54,31 @@ def business_extractor():
 def review_extractor():
 	dataset = open('/home/bigdata/Project/yelp_academic_dataset_review.json', 'r')
 	writer = csv.writer(open('/home/bigdata/Project/yelp_reviews.csv', 'w'))
-	writer.writerow(['UID', 'BID', 'Stars', 'Review_Text'])
+	writer.writerow(['UID', 'BID', 'Stars'])
 
 	for line in dataset:
 		line_dict = json.loads(line)
 		bid = line_dict[BUSINESS_ID].encode('utf-8')
+
 		if bid not in business_id_set:
 			continue
+
+		stars = line_dict[STARS]
 
 		uid = line_dict[USER_ID].encode('utf-8')
 		user_id_set.add(uid)
 
-		rtype = line_dict[TYPE_STRING].encode('utf-8')
-		stars = line_dict[STARS]
-		review_text = line_dict[REVIEW_TEXT].encode('utf-8')
-		writer.writerow([uid, bid, stars, review_text])
+		if uid in user_review_rating_sum_dict:
+			user_review_rating_sum_dict[uid] = user_review_rating_sum_dict[uid] + stars
+		else:
+			user_review_rating_sum_dict[uid] = stars
+
+		if uid in user_review_count_dict:
+			user_review_count_dict[uid] = user_review_count_dict[uid] + 1
+		else:
+			user_review_count_dict[uid] = 1
+
+		writer.writerow([uid, bid, stars])
 
 	dataset.close()
 
@@ -74,7 +86,7 @@ def review_extractor():
 def user_extractor():
 	dataset = open('/home/bigdata/Project/yelp_academic_dataset_user.json', 'r')
 	writer = csv.writer(open('/home/bigdata/Project/yelp_users.csv', 'w'))
-	writer.writerow(['UID', 'Name', 'Review_Count'])
+	writer.writerow(['UID', 'Name', 'Review_Count', 'Total_Stars', 'Average'])
 
 	for line in dataset:
 		line_dict = json.loads(line)
@@ -85,8 +97,9 @@ def user_extractor():
 		utype = line_dict[TYPE_STRING].encode('utf-8')
 		name = line_dict[UNAME].encode('utf-8')
 		review_count = line_dict[REVIEW_COUNT]
-		writer.writerow([uid, name, review_count])
-
+		total_stars = user_review_rating_sum_dict[uid]
+		average_stars = float(total_stars)/review_count
+		writer.writerow([uid, name, user_review_count_dict[uid], total_stars, average_stars])
 
 	dataset.close()
 
@@ -96,5 +109,6 @@ def main():
 	business_extractor()
 	review_extractor()
 	user_extractor()
+	# business_writer()
 
 main()
