@@ -18,6 +18,13 @@ if __name__ == "__main__":
 		if data2['business_id'] in business_id:
 			review.append (data2['text'])
 	
-	with open('file.txt', 'a') as file:
-    	for item in data2:
-	    	file.write(item)
+	textFile = open('review.txt', 'w')
+	
+	#list = [review[], review[1], review[2], review[3]]
+	for item in review:
+		#print item
+		text = item.strip('\n')
+		textFile.write(text.encode('utf-8')+'\n \r')
+
+	textFile.close()
+	#print review
