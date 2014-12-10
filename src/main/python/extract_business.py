@@ -109,6 +109,5 @@ def main():
 	business_extractor()
 	review_extractor()
 	user_extractor()
-	# business_writer()
 
 main()
